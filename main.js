@@ -1,3 +1,7 @@
+let display = document.querySelector('#display h2');
+const displayBox = document.querySelector('#display');
+let tmpNumber = "";
+
 /************* ADD EVENTHANDLERS FOR BUTTONS *************/
 const numbers = document.querySelectorAll('.value');
 numbers.forEach(btnNum => {
@@ -18,16 +22,22 @@ clearBtn.addEventListener("click", clear);
 const delBtn = document.querySelector('#del');
 delBtn.addEventListener("click", deleteLast);
 
+//transition displayBox
+displayBox.addEventListener("transitionend", removeTransition);
+
+//keyboard support
+window.addEventListener("keydown", keyboardHandler);
+
 /*********EVENTS ***************************/
-let display = document.querySelector('#display h2');
-let tmpNumber = "";
+
+
 
 
 function calculate() {
     const hasNoOperators = !(/[*+/-]/.test(display.textContent));
     const hasIllegalChars = /[a-z|A-Z]/.test(display.textContent);
     if (hasIllegalChars || hasNoOperators || lastCharIsOperator()) {
-        displayError("Ops.. take a look at the display!");
+        displayBox.classList.add("error");
         return;
     }
 
@@ -37,36 +47,41 @@ function calculate() {
     const needsRounding = res.length > 20 && /[.]/.test(res);
     if (needsRounding) res = formatResult(res);
 
+    displayBox.classList.add("success");
     display.textContent = res;
 }
 
-function addNumber() {
+function addNumber(e) {
     if (display.textContent.charAt(0) === '0') display.textContent = "";
 
-    const isDividingByZero = display.textContent.slice(-1) === '/' && this.textContent === '0';
+    const digit = this.textContent ? this.textContent : e.key; 
+
+    const isDividingByZero = display.textContent.slice(-1) === '/' && digit === '0';
     if (isDividingByZero) {
-        displayError("Ops.. are you trying to divide by zero!?");
+        displayBox.classList.add("error");
         return;
     }
 
-    const multipleDots = /[.]/.test(tmpNumber) && this.textContent === '.';
+    const multipleDots = /[.]/.test(tmpNumber) && digit === '.';
     if (multipleDots) {
-        displayError("Ops.. Numbers can only contain one '.' !");
+        displayBox.classList.add("error");
         return;
     }
 
-    tmpNumber += this.textContent;
-    display.textContent += this.textContent;
+    tmpNumber += digit;
+    display.textContent += digit;
 }
 
-function operatorClicked() {
+function operatorClicked(e) {
+    operator = this.textContent ? this.textContent : e.key; 
+
     if (lastCharIsOperator()) {
-        displayError("Ops.. you cannot insert an operator here");
+        displayBox.classList.add("error");
         return;
     }
 
     tmpNumber = "";
-    display.textContent += this.textContent;
+    display.textContent += operator;
 }
 
 function clear() {
@@ -93,13 +108,55 @@ function formatResult(res) {
     const precision = maxLength - spltiRes[0].length;
 
     //round to precision
-    var factor = Math.pow(10, precision);
+    const factor = Math.pow(10, precision);
     return Math.round(res * factor) / factor;
 }
 
-function displayError(msg) {
-    var x = document.getElementById("snackbar")
-    x.textContent = msg;
-    x.className = "show";
-    setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
+function removeTransition(e) {
+    if(e.propertyName !== 'transform') return;  
+    this.classList.remove("success");
+    this.classList.remove("error");
+  }
+
+  function keyboardHandler(e) {
+    switch(e.key) {
+        case '=': calculate();
+        break;
+        case 'Enter': calculate();
+        break;
+        case '/': operatorClicked(e);
+        break;
+        case '+': operatorClicked(e);
+        break;
+        case '-': operatorClicked(e);
+        break;
+        case '*': operatorClicked(e);
+        break;
+        case 'Backspace': deleteLast();
+        break;
+        case 'c': clear();
+        break;
+        case '1': addNumber(e);
+        break;
+        case '2': addNumber(e);
+        break;
+        case '3': addNumber(e);
+        break;
+        case '4': addNumber(e);
+        break;
+        case '5': addNumber(e);
+        break;
+        case '6': addNumber(e);
+        break;
+        case '7': addNumber(e);
+        break;
+        case '8': addNumber(e);
+        break;
+        case '9': addNumber(e);
+        break;
+        case '0': addNumber(e);
+        break;
+        case '.': addNumber(e);
+        break;
+    }
 }

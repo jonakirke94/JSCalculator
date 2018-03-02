@@ -19,6 +19,7 @@
     text-align: right;
     vertical-align: middle;
     overflow: hidden;
+    transition: all .3s ease;
 }
 
 h2 {
@@ -76,50 +77,14 @@ button {
     height: 100%;
 }
 
-
-
-
-
-/* https://www.w3schools.com/howto/howto_js_snackbar.asp */
-#snackbar {
-    visibility: hidden; 
-    min-width: 459px; 
-    margin-left: -246px; 
-    background-color: red; 
-    color: #fff; 
-    text-align: center; 
-    border-radius: 2px; 
-    padding: 16px;
-    position: fixed; 
-    z-index: 1; 
-    left: 50%; 
-    bottom: 30px; 
-    font-size: 24px;
+.success {
+    transform: scale(1.05);
+    border: 2px solid green;
+    box-shadow: 0 0 1rem green; 
 }
 
-#snackbar.show {
-    visibility: visible; 
-    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
-    animation: fadein 0.5s, fadeout 0.5s 2.5s;
-}
-
-/* Animations to fade the snackbar in and out */
-@-webkit-keyframes fadein {
-    from {bottom: 0; opacity: 0;} 
-    to {bottom: 30px; opacity: 1;}
-}
-
-@keyframes fadein {
-    from {bottom: 0; opacity: 0;}
-    to {bottom: 30px; opacity: 1;}
-}
-
-@-webkit-keyframes fadeout {
-    from {bottom: 30px; opacity: 1;} 
-    to {bottom: 0; opacity: 0;}
-}
-
-@keyframes fadeout {
-    from {bottom: 30px; opacity: 1;}
-    to {bottom: 0; opacity: 0;}
+.error {
+    transform: scale(1.05);
+    border: 2px solid red;
+    box-shadow: 0 0 1rem red; 
 }
