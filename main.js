@@ -1,42 +1,7 @@
-let display = document.querySelector('#display h2');
-let inputs = [];
-
-
-function operate(op, a, b) {
-    switch(op) {
-        case "+": add(a,b);
-        break;
-        case "-": subtract(a,b);
-        break;
-        case "*": multiply(a,b);
-        break;
-        case "/": divide(a,b);
-        break;
-    }
-}
-
-
-
-function add(a,b) {
-    return a+b;
-}
-
-function subtract(a,b) {
-    return a-b; 
-}
-
-function multiply(a,b) {
-    return a*b;
-}
-
-function divide(a,b) {
-    return a/b;
-}
-
 /************* ADD EVENTHANDLERS FOR BUTTONS *************/
 const numbers = document.querySelectorAll('.value');
 numbers.forEach(btnNum => {
-    btnNum.addEventListener("click", numClicked);
+    btnNum.addEventListener("click", addNumber);
 });
 
 const operators = document.querySelectorAll('.operator');
@@ -54,44 +19,87 @@ const delBtn = document.querySelector('#del');
 delBtn.addEventListener("click", deleteLast);
 
 /*********EVENTS ***************************/
+let display = document.querySelector('#display h2');
+let tmpNumber = "";
+
 
 function calculate() {
-    //push the current value;
+    const hasNoOperators = !(/[*+/-]/.test(display.textContent));
+    const hasIllegalChars = /[a-z|A-Z]/.test(display.textContent);
+    if (hasIllegalChars || hasNoOperators || lastCharIsOperator()) {
+        displayError("Ops.. take a look at the display!");
+        return;
+    }
 
+    let res = eval(display.textContent);
 
+    //if the result is larger than 20 and contains decimals format it
+    const needsRounding = res.length > 20 && /[.]/.test(res);
+    if (needsRounding) res = formatResult(res);
 
-    operate(op, a, b);
-    display.textContent = 12;
+    display.textContent = res;
 }
 
-function numClicked() {
-    if(display.textContent.charAt(0) === '0')  display.textContent = "";
-    
-    addDisplay(this.textContent);
+function addNumber() {
+    if (display.textContent.charAt(0) === '0') display.textContent = "";
+
+    const isDividingByZero = display.textContent.slice(-1) === '/' && this.textContent === '0';
+    if (isDividingByZero) {
+        displayError("Ops.. are you trying to divide by zero!?");
+        return;
+    }
+
+    const multipleDots = /[.]/.test(tmpNumber) && this.textContent === '.';
+    if (multipleDots) {
+        displayError("Ops.. Numbers can only contain one '.' !");
+        return;
+    }
+
+    tmpNumber += this.textContent;
+    display.textContent += this.textContent;
 }
 
 function operatorClicked() {
-    
-    const currentInputs = display.textContent.split([/"*+\-\/"/]);
-    const last = currentInputs.length-1;
-    console.log(currentInputs[last]);
+    if (lastCharIsOperator()) {
+        displayError("Ops.. you cannot insert an operator here");
+        return;
+    }
 
-    //push the current value;
-
-    //push the operator;
-
-    console.log(currentInputs);
+    tmpNumber = "";
+    display.textContent += this.textContent;
 }
 
 function clear() {
-    display.textContent = "0";
-    inputs = [];
+    tmpNumber = "";
+    display.textContent = "";
 }
 
 function deleteLast() {
-    console.log("delete clicked");
+    tmpNumber = tmpNumber.slice(0, -1);
+    display.textContent = display.textContent.slice(0, -1);
 }
 
-function addDisplay(val) {
-    display.textContent += val;
+/**************** HELPERS *************/
+
+function lastCharIsOperator() {
+    const lastChar = display.textContent.slice(-1);
+    return /[*-/+]/.test(lastChar) || lastChar.length === 0;
+
+}
+ 
+function formatResult(res) {
+    const maxLength = 20;
+    let splitRes = res.split(".");
+    const precision = maxLength - spltiRes[0].length;
+
+    //round to precision
+    var factor = Math.pow(10, precision);
+    return Math.round(res * factor) / factor;
+}
+
+function displayError(msg) {
+    var x = document.getElementById("snackbar")
+    x.textContent = msg;
+    x.className = "show";
+    setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
 }
