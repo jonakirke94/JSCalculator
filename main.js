@@ -28,11 +28,8 @@ displayBox.addEventListener("transitionend", removeTransition);
 //keyboard support
 window.addEventListener("keydown", keyboardHandler);
 
-/*********EVENTS ***************************/
 
-
-
-
+/*********FUNCTIONALITY ***************************/
 function calculate() {
     const hasNoOperators = !(/[*+/-]/.test(display.textContent));
     const hasIllegalChars = /[a-z|A-Z]/.test(display.textContent);
@@ -43,7 +40,6 @@ function calculate() {
 
     let res = eval(display.textContent);
 
-    //if the result is larger than 20 and contains decimals format it
     const needsRounding = res.length > 20 && /[.]/.test(res);
     if (needsRounding) res = formatResult(res);
 
@@ -54,7 +50,7 @@ function calculate() {
 function addNumber(e) {
     if (display.textContent.charAt(0) === '0') display.textContent = "";
 
-    const digit = this.textContent ? this.textContent : e.key; 
+    const digit = this.textContent ? this.textContent : e.key;
 
     const isDividingByZero = display.textContent.slice(-1) === '/' && digit === '0';
     if (isDividingByZero) {
@@ -73,7 +69,7 @@ function addNumber(e) {
 }
 
 function operatorClicked(e) {
-    operator = this.textContent ? this.textContent : e.key; 
+    operator = this.textContent ? this.textContent : e.key;
 
     if (lastCharIsOperator()) {
         displayBox.classList.add("error");
@@ -95,13 +91,11 @@ function deleteLast() {
 }
 
 /**************** HELPERS *************/
-
 function lastCharIsOperator() {
     const lastChar = display.textContent.slice(-1);
     return /[*-/+]/.test(lastChar) || lastChar.length === 0;
-
 }
- 
+
 function formatResult(res) {
     const maxLength = 20;
     let splitRes = res.split(".");
@@ -113,50 +107,50 @@ function formatResult(res) {
 }
 
 function removeTransition(e) {
-    if(e.propertyName !== 'transform') return;  
+    if (e.propertyName !== 'transform') return;
     this.classList.remove("success");
     this.classList.remove("error");
-  }
+}
 
-  function keyboardHandler(e) {
-    switch(e.key) {
+function keyboardHandler(e) {
+    switch (e.key) {
         case '=': calculate();
-        break;
+            break;
         case 'Enter': calculate();
-        break;
+            break;
         case '/': operatorClicked(e);
-        break;
+            break;
         case '+': operatorClicked(e);
-        break;
+            break;
         case '-': operatorClicked(e);
-        break;
+            break;
         case '*': operatorClicked(e);
-        break;
+            break;
         case 'Backspace': deleteLast();
-        break;
+            break;
         case 'c': clear();
-        break;
+            break;
         case '1': addNumber(e);
-        break;
+            break;
         case '2': addNumber(e);
-        break;
+            break;
         case '3': addNumber(e);
-        break;
+            break;
         case '4': addNumber(e);
-        break;
+            break;
         case '5': addNumber(e);
-        break;
+            break;
         case '6': addNumber(e);
-        break;
+            break;
         case '7': addNumber(e);
-        break;
+            break;
         case '8': addNumber(e);
-        break;
+            break;
         case '9': addNumber(e);
-        break;
+            break;
         case '0': addNumber(e);
-        break;
+            break;
         case '.': addNumber(e);
-        break;
+            break;
     }
 }
